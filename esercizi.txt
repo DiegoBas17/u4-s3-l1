@@ -1,0 +1,85 @@
+INIZIO ESERCIZI:
+CREATE TABLE public."Prodotti"
+(
+    id_prodotto serial NOT NULL,
+    descrizione character varying,
+    in_produzione boolean NOT NULL,
+    in_commercio boolean NOT NULL,
+    data_attivazione date,
+    data_disattivazione date,
+    PRIMARY KEY (None)
+);
+
+ALTER TABLE IF EXISTS public."Prodotti"
+    OWNER to postgres;
+
+    CREATE TABLE public."Fatture"
+(
+    numero_fattura serial,
+    tipologia character varying,
+    importo integer NOT NULL,
+    iva integer,
+    id_cliente integer,
+    data_fattura date NOT NULL,
+    numero_fornitore integer,
+    PRIMARY KEY (numero_fattura)
+);
+
+ALTER TABLE IF EXISTS public."Fatture"
+    OWNER to postgres;
+
+    ALTER TABLE IF EXISTS public."Fatture"
+    ADD CONSTRAINT fk_id_fornitore FOREIGN KEY (numero_fornitore)
+    REFERENCES public."Fornitori" (numero_fornitore) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+
+     INSERT INTO public."Clienti"(
+	 nome, cognome, anno_di_nascita, regione_residenza)
+	VALUES ( 'gabriel', 'azamfiri', '1997-10-05', 'milano'), ( 'eddy', 'turpo', '1990-03-01', 'latina'), ( 'yuri', 'impellizzeri', '2002-05-09', 'augusta'), ( 'kassandra', 'falsitta', '2000-11-25', 'sicilia');
+
+
+es1
+SELECT * FROM clienti
+WHERE nome = 'gabriel';
+
+es2
+SELECT * FROM clienti
+WHERE anno_di_nascita = '1997-10-05'
+
+es3
+SELECT * FROM fatture
+WHERE iva = '10';
+
+es4
+SELECT * FROM prodotti
+WHERE EXTRACT(YEAR FROM data_attivazione) = 2017
+AND (in_produzione = true OR in_commercio = true);
+
+es5
+SELECT * FROM fatture
+INNER JOIN clienti ON id_cliente = numero_clienti
+WHERE importo<1000;
+
+es6
+SELECT numero_fattura, importo, iva, data_fattura, denominazione
+FROM fatture
+INNER JOIN fornitori ON fatture.numero_fornitore = fornitori.numero_fornitore;
+
+es7
+SELECT COUNT(*) AS anno FROM fatture
+WHERE iva='22'
+GROUP BY EXTRACT(YEAR FROM data_fattura)
+
+es8
+SELECT EXTRACT(YEAR FROM data_fattura) AS anno,
+COUNT(*) AS numero_fatture,
+SUM(importo) AS totale_importi
+FROM fatture
+GROUP BY EXTRACT(YEAR FROM data_fattura)
+ORDER BY anno;
+
+extra1
